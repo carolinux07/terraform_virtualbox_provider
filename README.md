@@ -41,8 +41,17 @@ touch main.tf && vi main.tf
 
 ### Código para geração de 3 Vms (Ubuntu, CentOS e Debian):
 
-<AQUI>
+https://github.com/carolinux07/terraform_virtualbox_provider/blob/master/main.tf
 
+### Execução dos comandos do terraform:
+
+Obs.: Utilizei o parâmetro para Debug pois muitos erros foram ocorrendo e precisava entender em que camada estava o problema (terraform / plugin / vagrant / virtualbox / SO)
+
+```
+terraform init
+TF_LOG=DEBUG terraform plan -out plano
+TF_LOG=DEBUG terraform apply "plano"
+```
 
 ### Problemas encontrados:
 
@@ -60,8 +69,16 @@ Error: exit status 1
   on main.tf line 1, in resource "virtualbox_vm" "ubuntu":
    1: resource "virtualbox_vm" "ubuntu" {
 ```
+Descobri essa através do Debug do terraform e verificando o arquivo virtiualbox.xml. 
+```
+grep "HardDisk uuid" /home/carol/.config/VirtualBox/VirtualBox.xml
+<HardDisk uuid="{87990bd0-c225-4c86-89ef-73d6017b06ec}" location="/home/carol/.terraform/virtualbox/gold/centos/centos-7-1-1.x86_64.vmdk" format="VMDK" type="Normal"/>
+        <HardDisk uuid="{2904da25-8b8b-46b2-af45-dfd75877d755}" location="/home/carol/.terraform/virtualbox/gold/ubuntu/ubuntu-bionic-18.04-cloudimg-configdrive.vmdk" format="VMDK" type="Normal"/>
+        <HardDisk uuid="{dd863f3b-fbc3-467c-a8f9-4d57974e3435}" location="/home/carol/.terraform/virtualbox/gold/ubuntu/ubuntu-bionic-18.04-cloudimg.vmdk" format="VMDK" type="Normal"/>
+        <HardDisk uuid="{ca5c746f-9b3f-4107-aef9-4fd17814da20}" location="/home/carol/.terraform/virtualbox/gold/debian/buster.vmdk" format="VMDK" type="Normal"/>
+```
 
-Para que esse tipo de erro não ocorra precisei apagar os discos virtuais em: File > Virtual Media Manager...
+Para que esse tipo de erro não ocorra precisei apagar os discos virtuais em: File > Virtual Media Manager... ou editar o xml citado removendo esas entradas de HardDisk.
 
 ##### Erro 3:
 
